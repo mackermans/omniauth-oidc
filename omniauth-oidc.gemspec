@@ -5,7 +5,7 @@ require 'omniauth/oidc/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "omniauth-oidc"
-  spec.version       = Omniauth::Oidc::VERSION
+  spec.version       = OmniAuth::OIDC::VERSION
   spec.authors       = ["Maarten Ackermans"]
   spec.email         = ["maarten.ackermans@gmail.com"]
 
