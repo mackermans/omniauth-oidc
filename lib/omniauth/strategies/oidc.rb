@@ -96,7 +96,7 @@ module OmniAuth
       end
 
       def client
-        @client ||= ::OpenIDConnect::Client.new(client_options)
+        @client ||= ::OpenIDConnect::Client.new(options.client_options)
       end
 
       def config
@@ -104,10 +104,10 @@ module OmniAuth
       end
 
       def discover!
-        client_options.authorization_endpoint = config.authorization_endpoint
-        client_options.token_endpoint = config.token_endpoint
-        client_options.userinfo_endpoint = config.userinfo_endpoint
-        client_options.jwks_uri = config.jwks_uri
+        options.client_options.authorization_endpoint = config.authorization_endpoint
+        options.client_options.token_endpoint = config.token_endpoint
+        options.client_options.userinfo_endpoint = config.userinfo_endpoint
+        options.client_options.jwks_uri = config.jwks_uri
       end
 
       def authorize_uri
@@ -127,7 +127,7 @@ module OmniAuth
           ).tap do |access_token|
             decode_id_token(access_token.id_token).verify!(
               issuer: options.issuer,
-              client_id: client_options.identifier,
+              client_id: options.client_options.identifier,
               nonce: stored_nonce
             )
           end
