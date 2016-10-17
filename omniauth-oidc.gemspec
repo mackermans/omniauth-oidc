@@ -9,8 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Maarten Ackermans"]
   spec.email         = ["maarten.ackermans@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = "OpenID Connect adapter for OmniAuth"
   spec.homepage      = "https://github.com/mackermans/omniauth-oidc"
   spec.license       = "MIT"
 
