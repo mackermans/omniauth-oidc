@@ -3,7 +3,7 @@ require 'openid_connect'
 
 module OmniAuth
   module Strategies
-    class Oidc
+    class OIDC
       include OmniAuth::Strategy
 
       option :client_options, {
@@ -170,3 +170,5 @@ module OmniAuth
     end
   end
 end
+
+OmniAuth.config.add_camelization('oidc', 'OIDC')
