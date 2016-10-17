@@ -70,7 +70,7 @@ module OmniAuth
 
       def request_phase
         options.issuer = issuer if options.issuer.blank?
-        discover! if option.discovery
+        discover! if options.discovery
         redirect authorize_uri
       end
 
