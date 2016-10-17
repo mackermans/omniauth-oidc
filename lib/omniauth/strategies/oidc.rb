@@ -3,7 +3,7 @@ require 'openid_connect'
 
 module OmniAuth
   module Strategies
-    class OIDC
+    class Oidc
       include OmniAuth::Strategy
 
       option :client_options, {
