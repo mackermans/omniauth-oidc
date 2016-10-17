@@ -8,13 +8,14 @@ module OmniAuth
 
       option :client_options, {
         client_id: nil,
+        identifier: nil,
         secret: nil,
+        redirect_uri: nil,
         authorization_endpoint: "/authorize",
         token_endpoint: "/token",
         userinfo_endpoint: "/userinfo",
         jwks_uri: '/jwk'
       }
-      option :redirect_uri
       option :issuer
       option :discovery, true
       option :client_signing_alg
@@ -83,7 +84,8 @@ module OmniAuth
         else
           options.issuer = issuer if options.issuer.blank?
           discover! if options.discovery
-          client.authorization_code = authorization_code
+          client.id_token = request.params['id_token']
+          client.redirect_uri = options.client_options.redirect_uri
           access_token
           super
         end
@@ -111,6 +113,7 @@ module OmniAuth
       end
 
       def authorize_uri
+        client.redirect_uri = options.client_options.redirect_uri
         client.authorization_uri({
             response_type: options.response_type,
             scope: options.scope,
