@@ -11,9 +11,7 @@ module OmniAuth
         identifier: nil,
         secret: nil,
         redirect_uri: nil,
-        authorization_endpoint: "/authorize",
-        token_endpoint: "/token",
-        userinfo_endpoint: "/userinfo",
+        host: nil,
         jwks_uri: '/jwk'
       }
       option :issuer
@@ -22,9 +20,9 @@ module OmniAuth
       option :client_jwk_signing_key
       option :client_x509_signing_key
       option :scope, [:openid]
-      option :response_type, "id_token"
+      option :response_type, :code
       option :state
-      option :response_mode
+      option :response_mode, :query
       option :display, nil #, [:page, :popup, :touch, :wap]
       option :prompt, nil #, [:none, :login, :consent, :select_account]
       option :hd, nil
@@ -84,7 +82,7 @@ module OmniAuth
         else
           options.issuer = issuer if options.issuer.blank?
           discover! if options.discovery
-          client.id_token = request.params['id_token']
+          client.authorization_code = request.params[options.response_type.to_s]
           client.redirect_uri = options.client_options.redirect_uri
           access_token
           super
@@ -98,11 +96,11 @@ module OmniAuth
       end
 
       def client
-        @client ||= ::OpenIDConnect::Client.new(options.client_options)
+        @client ||= OpenIDConnect::Client.new(options.client_options)
       end
 
       def config
-        @config ||= ::OpenIDConnect::Discovery::Provider::Config.discover!(options.issuer)
+        @config ||= OpenIDConnect::Discovery::Provider::Config.discover!(options.issuer)
       end
 
       def discover!
@@ -116,25 +114,32 @@ module OmniAuth
         client.redirect_uri = options.client_options.redirect_uri
         client.authorization_uri({
             response_type: options.response_type,
+            response_mode: options.response_mode,
             scope: options.scope,
             state: generate_state,
             nonce: generate_nonce,
         })
       end
 
+      def user_info
+        @user_info ||= access_token.userinfo!
+      end
+
       def access_token
-        @access_token ||= begin
-          client.access_token!(
-            scope: (options.scope if options.send_scope_to_token_endpoint),
-            client_auth_method: options.client_auth_method
-          ).tap do |access_token|
-            decode_id_token(access_token.id_token).verify!(
-              issuer: options.issuer,
-              client_id: options.client_options.identifier,
-              nonce: stored_nonce
-            )
-          end
+        @access_token ||= client.access_token!(
+          scope: options.scope,
+          client_auth_method: options.client_auth_method
+        ).tap do |access_token|
+          decode_id_token(access_token.id_token).verify!(
+            issuer: options.issuer,
+            client_id: options.client_options.identifier,
+            nonce: stored_nonce
+          )
         end
+      end
+
+      def decode_id_token(id_token)
+        OpenIDConnect::ResponseObject::IdToken.decode(id_token, config.jwks)
       end
 
       def generate_nonce
