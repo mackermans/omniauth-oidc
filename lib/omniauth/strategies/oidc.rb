@@ -118,6 +118,7 @@ module OmniAuth
             scope: options.scope,
             state: generate_state,
             nonce: generate_nonce,
+            prompt: options.prompt
         })
       end
 
